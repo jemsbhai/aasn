@@ -1,14 +1,22 @@
 # Phase Transition Experiment Runner
-# Runs both conditions sequentially: rich feedback then score-only control
-# Total estimated runtime: ~15 hours on RTX 4090 with Qwen2.5-Coder-7B
+# Runs both conditions: rich feedback then score-only control
+# Safe to Ctrl+C at any time — resume with the same command.
 #
-# Usage: .\run_phase_transition.ps1
-# Safe to Ctrl+C and resume — results are saved per generation.
+# Usage:
+#   .\run_phase_transition.ps1           # Start fresh
+#   .\run_phase_transition.ps1 -Resume   # Resume from last checkpoint
+#
+# Estimated runtime: ~15 hours on RTX 4090 with Qwen2.5-Coder-7B
+
+param(
+    [switch]$Resume
+)
 
 $ErrorActionPreference = "Continue"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $scriptDir
 
+$resumeFlag = if ($Resume) { "--resume" } else { "" }
 $startTime = Get-Date
 
 Write-Host "============================================================"
@@ -17,6 +25,7 @@ Write-Host "Model: Qwen2.5-Coder-7B via Ollama"
 Write-Host "Temperature: 0.3"
 Write-Host "Generations: 50, Runs: 10, Tasks: 50"
 Write-Host "Conditions: rich feedback + score-only control"
+Write-Host "Resume mode: $Resume"
 Write-Host "Started: $startTime"
 Write-Host "============================================================"
 Write-Host ""
@@ -27,7 +36,11 @@ Write-Host "Estimated time: ~7.7 hours"
 Write-Host "Start: $(Get-Date)"
 Write-Host ""
 
-python run_experiment.py --config configs/phase_transition_rich.yaml
+if ($Resume) {
+    python run_experiment.py --config configs/phase_transition_rich.yaml --resume
+} else {
+    python run_experiment.py --config configs/phase_transition_rich.yaml
+}
 
 $richEnd = Get-Date
 $richDuration = $richEnd - $startTime
@@ -41,7 +54,11 @@ Write-Host "Estimated time: ~7.7 hours"
 Write-Host "Start: $(Get-Date)"
 Write-Host ""
 
-python run_experiment.py --config configs/phase_transition_score_only.yaml
+if ($Resume) {
+    python run_experiment.py --config configs/phase_transition_score_only.yaml --resume
+} else {
+    python run_experiment.py --config configs/phase_transition_score_only.yaml
+}
 
 $totalEnd = Get-Date
 $totalDuration = $totalEnd - $startTime
