@@ -1,0 +1,38 @@
+name: bonsai-8b_general_task_none
+description: Model=bonsai-8b, Agent=general_task, Mitigation=none
+seed: 42
+agent_type: general_task
+num_generations: 20
+spawning_prompt: ''
+spawning_prompt_file: null
+llm:
+  provider: llamacpp
+  base_url: http://localhost:8080/v1
+  model: Bonsai-8B
+  temperature: 0.7
+  max_tokens: 4096
+  api_key: not-needed
+benchmarks:
+  benchmark_dir: benchmarks
+  coding_tasks:
+  - humaneval_subset
+  - custom
+  general_tasks:
+  - reasoning
+  - instruction_following
+  prompt_tasks:
+  - code_generation
+  - analysis
+  eval_timeout_seconds: 30
+mitigation:
+  strategy: none
+  anchor_interval: 5
+  fidelity_threshold: 0.5
+  store_path: results\context_store
+  num_invariants: 5
+  rot_rate_threshold: 0.1
+  lookback_window: 3
+num_runs: 5
+output_dir: results
+log_level: INFO
+embedding_model: all-MiniLM-L6-v2

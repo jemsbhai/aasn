@@ -27,6 +27,13 @@ class MitigationType(str, Enum):
     CIRCUIT_BREAKER = "circuit_breaker"
 
 
+class FeedbackMode(str, Enum):
+    """Feedback channel bandwidth for inter-generational transfer."""
+
+    SCORE_ONLY = "score_only"  # Low bandwidth: aggregate scores only
+    RICH = "rich"  # High bandwidth: per-task errors, traces, cumulative memory
+
+
 class LLMConfig(BaseModel):
     """Configuration for the LLM backend."""
 
@@ -46,6 +53,7 @@ class BenchmarkConfig(BaseModel):
     general_tasks: list[str] = Field(default_factory=lambda: ["reasoning", "instruction_following"])
     prompt_tasks: list[str] = Field(default_factory=lambda: ["code_generation", "analysis"])
     eval_timeout_seconds: int = 30
+    task_sample_size: int | None = None  # If set, randomly sample N tasks per run
 
 
 class MitigationConfig(BaseModel):
@@ -81,6 +89,9 @@ class ExperimentConfig(BaseModel):
     num_generations: int = 20
     spawning_prompt: str = ""  # Initial P_0 (loaded from file if empty)
     spawning_prompt_file: Path | None = None
+
+    # Feedback configuration
+    feedback_mode: FeedbackMode = FeedbackMode.SCORE_ONLY
 
     # LLM configuration
     llm: LLMConfig = Field(default_factory=LLMConfig)

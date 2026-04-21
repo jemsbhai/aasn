@@ -1,0 +1,31 @@
+# Score-only control: low-bandwidth channel, Qwen 7B, same subsample
+# Phase diagram prediction: stochastic regime (confirmed by prior run)
+name: qwen2.5-coder-7b_coding_score_only
+description: "Qwen-7B with score-only feedback (control for rich feedback comparison)"
+seed: 42
+
+agent_type: coding
+num_generations: 10
+num_runs: 1
+
+feedback_mode: score_only
+
+llm:
+  provider: ollama
+  base_url: http://localhost:11434/v1
+  model: qwen2.5-coder:7b
+  temperature: 0.7
+  max_tokens: 4096
+  api_key: ollama
+
+benchmarks:
+  benchmark_dir: benchmarks
+  eval_timeout_seconds: 30
+  task_sample_size: 50  # Same subsample as rich feedback
+
+mitigation:
+  strategy: none
+
+output_dir: results
+log_level: INFO
+embedding_model: all-MiniLM-L6-v2

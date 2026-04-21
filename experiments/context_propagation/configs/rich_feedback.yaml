@@ -1,0 +1,31 @@
+# Rich feedback experiment: high-bandwidth inter-generational transfer
+# Tests the improvement regime of the phase diagram
+name: qwen2.5-coder-7b_coding_rich
+description: "Qwen2.5-Coder-7B with rich feedback (per-task errors, traces, cumulative memory)"
+seed: 42
+
+agent_type: coding
+num_generations: 10
+num_runs: 1
+
+feedback_mode: rich
+
+llm:
+  provider: ollama
+  base_url: http://localhost:11434/v1
+  model: qwen2.5-coder:7b
+  temperature: 0.7
+  max_tokens: 4096
+  api_key: ollama
+
+benchmarks:
+  benchmark_dir: benchmarks
+  eval_timeout_seconds: 30
+  task_sample_size: 30  # Subsample for local testing
+
+mitigation:
+  strategy: none
+
+output_dir: results
+log_level: INFO
+embedding_model: all-MiniLM-L6-v2
