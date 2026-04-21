@@ -12,12 +12,12 @@ def test_version_exists():
 
 def test_package_imports():
     """Verify core subpackages are importable."""
-    import aasn.core
-    import aasn.dna
-    import aasn.registry
-    import aasn.compiler
-    import aasn.adapters
-    import aasn.evolution
-    import aasn.plugins
-    import aasn.testing
-    import aasn.observability
+    import aasn.adapters  # noqa: F401
+    import aasn.compiler  # noqa: F401
+    import aasn.core  # noqa: F401
+    import aasn.dna  # noqa: F401
+    import aasn.evolution  # noqa: F401
+    import aasn.observability  # noqa: F401
+    import aasn.plugins  # noqa: F401
+    import aasn.registry  # noqa: F401
+    import aasn.testing  # noqa: F401
