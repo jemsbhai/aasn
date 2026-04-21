@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -110,9 +111,29 @@ class ExperimentConfig(BaseModel):
     # Embedding model for semantic drift measurement
     embedding_model: str = "all-MiniLM-L6-v2"
 
+    # Archival timestamp — set at experiment start, included in output path
+    run_timestamp: str = ""
+
+    def initialize_timestamp(self) -> str:
+        """Set the timestamp for this experiment execution. Call once at start."""
+        self.run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        return self.run_timestamp
+
+    def get_experiment_dir(self) -> Path:
+        """Get the timestamped experiment directory."""
+        if not self.run_timestamp:
+            self.initialize_timestamp()
+        return self.output_dir / self.name / self.run_timestamp
+
     def get_run_dir(self, run_id: int) -> Path:
         """Get output directory for a specific run."""
-        return self.output_dir / self.name / f"run_{run_id:03d}"
+        return self.get_experiment_dir() / f"run_{run_id:03d}"
+
+    def save_snapshot(self) -> None:
+        """Save a frozen copy of this config to the experiment directory."""
+        experiment_dir = self.get_experiment_dir()
+        experiment_dir.mkdir(parents=True, exist_ok=True)
+        self.to_yaml(experiment_dir / "config_snapshot.yaml")
 
     @classmethod
     def from_yaml(cls, path: Path) -> ExperimentConfig:

@@ -41,13 +41,23 @@ async def run_experiment(config: ExperimentConfig) -> None:
     set_seed(config.seed)
     logger = logging.getLogger("experiment")
 
+    # Initialize timestamped output directory (never overwrites prior runs)
+    timestamp = config.initialize_timestamp()
+    experiment_dir = config.get_experiment_dir()
+    config.save_snapshot()
+
     logger.info("=" * 60)
     logger.info("Experiment: %s", config.name)
+    logger.info("Timestamp: %s", timestamp)
+    logger.info("Output: %s", experiment_dir)
     logger.info("Agent type: %s", config.agent_type.value)
+    logger.info("Feedback: %s", config.feedback_mode.value)
     logger.info("Generations: %d", config.num_generations)
     logger.info("Runs: %d", config.num_runs)
     logger.info("Model: %s", config.llm.model)
+    logger.info("Temperature: %s", config.llm.temperature)
     logger.info("Mitigation: %s", config.mitigation.strategy.value)
+    logger.info("Task sample: %s", config.benchmarks.task_sample_size or "all")
     logger.info("=" * 60)
 
     # Initialize components
@@ -106,17 +116,19 @@ async def run_experiment(config: ExperimentConfig) -> None:
             chain_metrics.total_drift,
         )
 
-    # Save aggregate summary
-    output_dir = config.output_dir / config.name
-    output_dir.mkdir(parents=True, exist_ok=True)
-
+    # Save aggregate summary to the timestamped experiment directory
     aggregate = {
         "experiment": config.name,
+        "timestamp": timestamp,
         "agent_type": config.agent_type.value,
+        "feedback_mode": config.feedback_mode.value,
         "model": config.llm.model,
+        "temperature": config.llm.temperature,
         "mitigation": config.mitigation.strategy.value,
         "num_runs": config.num_runs,
         "num_generations": config.num_generations,
+        "task_sample_size": config.benchmarks.task_sample_size,
+        "seed": config.seed,
         "results": {
             "avg_final_fidelity": float(np.mean([m.final_fidelity for m in all_metrics])),
             "std_final_fidelity": float(np.std([m.final_fidelity for m in all_metrics])),
@@ -131,7 +143,7 @@ async def run_experiment(config: ExperimentConfig) -> None:
         },
     }
 
-    with open(output_dir / "aggregate_results.json", "w") as f:
+    with open(experiment_dir / "aggregate_results.json", "w") as f:
         json.dump(aggregate, f, indent=2)
 
     logger.info("=" * 60)
@@ -140,7 +152,7 @@ async def run_experiment(config: ExperimentConfig) -> None:
     logger.info("Avg rot rate:   %.4f +/- %.4f", aggregate["results"]["avg_rot_rate"], aggregate["results"]["std_rot_rate"])
     logger.info("Total drift:    %.3f +/- %.3f", aggregate["results"]["avg_total_drift"], aggregate["results"]["std_total_drift"])
     logger.info("LLM calls: %d, tokens: %d", llm.call_count, llm.total_tokens_used)
-    logger.info("Results saved to: %s", output_dir)
+    logger.info("Results saved to: %s", experiment_dir)
     logger.info("=" * 60)
 
 
