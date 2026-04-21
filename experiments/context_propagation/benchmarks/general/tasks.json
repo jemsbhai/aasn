@@ -1,0 +1,32 @@
+[
+  {
+    "id": "general_001_reasoning",
+    "type": "contains",
+    "prompt": "A farmer has 17 sheep. All but 9 die. How many sheep does the farmer have left?",
+    "expected": ["9"]
+  },
+  {
+    "id": "general_002_logic",
+    "type": "contains",
+    "prompt": "If all roses are flowers, and some flowers fade quickly, can we conclude that some roses fade quickly? Explain your reasoning.",
+    "expected": ["no", "cannot"]
+  },
+  {
+    "id": "general_003_math",
+    "type": "contains",
+    "prompt": "What is the sum of all integers from 1 to 100?",
+    "expected": ["5050"]
+  },
+  {
+    "id": "general_004_instruction",
+    "type": "contains",
+    "prompt": "List exactly three benefits of regular exercise. Number them 1, 2, 3. Keep each benefit to one sentence.",
+    "expected": ["1", "2", "3"]
+  },
+  {
+    "id": "general_005_analysis",
+    "type": "contains",
+    "prompt": "What is the time complexity of binary search on a sorted array of n elements? Express using Big-O notation and explain why.",
+    "expected": ["O(log n)", "half"]
+  }
+]

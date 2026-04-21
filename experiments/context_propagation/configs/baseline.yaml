@@ -1,0 +1,27 @@
+# Baseline experiment: no mitigations, measure natural context rot
+name: baseline
+description: "Baseline context propagation experiment with no mitigations"
+seed: 42
+
+agent_type: coding  # Override per experiment: coding, general_task, self_redesigning
+num_generations: 20
+num_runs: 5
+
+llm:
+  provider: ollama
+  base_url: http://localhost:11434/v1
+  model: qwen2.5-coder:14b
+  temperature: 0.7
+  max_tokens: 4096
+  api_key: ollama
+
+benchmarks:
+  benchmark_dir: benchmarks
+  eval_timeout_seconds: 30
+
+mitigation:
+  strategy: none
+
+output_dir: results
+log_level: INFO
+embedding_model: all-MiniLM-L6-v2
