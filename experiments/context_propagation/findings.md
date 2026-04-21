@@ -95,3 +95,34 @@ Total configurations: 7 models x 3 agent types x 5 mitigations = 105
 - Running matched score-only control next.
 
 ---
+
+### 2026-04-21: Matched Rich vs Score-Only Comparison (Qwen-7B, coding, 50 tasks, 10 gens)
+
+**RESULT: INCONCLUSIVE. No statistically distinguishable difference.**
+
+Head-to-head on same 50-task subsample, same model, same seed:
+- Rich feedback:  0.28 -> 0.30 (net +0.02), mean=0.254
+- Score-only:     0.22 -> 0.28 (net +0.06), mean=0.246
+- Rich wins 5/10 generations (coin flip)
+
+**Why the earlier comparison was misleading:**
+The prior "phase transition signal" compared rich (50 tasks) vs score-only (669 tasks). Different task sets and counts made the comparison invalid. This matched control shows no clear advantage.
+
+**Root cause: noise dominates signal.**
+- Gen 0 scores differ by 0.06 despite identical setup (temperature=0.7 stochasticity)
+- Single runs cannot distinguish small systematic effects from random variation
+- 10 generations may be too few to see cumulative divergence
+
+**What we need:**
+1. 5+ runs per condition to compute confidence intervals
+2. 20+ generations to see if trajectories diverge at longer horizons
+3. Lower temperature (0.3-0.4) to reduce per-call noise
+4. A100 cluster to run the full matrix at sufficient statistical power
+
+**Updated phase diagram status:**
+- Bonsai-1.7B: confirmed mechanism failure (no prompt evolution)
+- Qwen-7B, score-only: stochastic regime (confirmed)
+- Qwen-7B, rich feedback: ALSO stochastic regime (not yet improvement)
+- Phase transition may require: more generations, larger model, or both
+
+---
